@@ -41,6 +41,7 @@
 
 /**
  * @typedef {Object} C_InputOptions
+ * @property {(string[]|Object<string, string>)} [placeholders]
  * @property {C_InputTransform} [transform]
  * @property {C_InputValidate} [validate]
  */

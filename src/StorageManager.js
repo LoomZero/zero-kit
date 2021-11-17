@@ -15,17 +15,23 @@ module.exports = class StorageManager {
     this.kit = kit;
 
     this.kit.handler.on('uninstall:app', (name) => {
-      FileUtil.removePath(this.path(), (file, path, relative) => {
-        console.log('Remove: ' + relative);
-      });
+      if (FS.existsSync(this.path())) {
+        FileUtil.removePath(this.path(), (file, path, relative) => {
+          console.log('Remove: ' + relative);
+        });
+        FS.rmdirSync(this.path());
+      }
     });
     this.kit.handler.on('uninstall', () => {
-      FileUtil.removePath(this.root, (file, path, relative) => {
-        console.log('Remove: ' + relative);
-      });
+      if (FS.existsSync(this.root)) {
+        FileUtil.removePath(this.root, (file, path, relative) => {
+          console.log('Remove: ' + relative);
+        });
+        FS.rmdirSync(this.root);
+      }
     });
     this.kit.handler.on('setup', () => {
-      this.ensure(this.path());
+      this.ensure(this.path(), false);
     });
   }
 
@@ -52,9 +58,10 @@ module.exports = class StorageManager {
    * Ensure the storage directories
    * 
    * @param {string} path
+   * @param {boolean} isFile
    * @returns {this}
    */
-  ensure(path = null) {
+  ensure(path = null, isFile = true) {
     this.checkApp();
     if (!FS.existsSync(this.root)) {
       FS.mkdirSync(this.root);
@@ -63,7 +70,7 @@ module.exports = class StorageManager {
       FS.mkdirSync(this.path());
     }
     if (path) {
-      FileUtil.prepareDir(this.path(), path);
+      FileUtil.prepareDir(this.path(), path, isFile);
     }
     return this;
   }

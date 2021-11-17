@@ -66,6 +66,29 @@ module.exports = class Color {
   }
 
   /**
+   * @param {string} type 
+   * @param {string} message
+   * @param {(Object<string, string>|string[])} [placeholders]
+   */
+  static log(type, message, placeholders = {}) {
+    if (type.startsWith('section.')) { 
+      console.log();
+      message = '  ' + message + '  ';
+    }
+    console.log(this.out(type, message, placeholders));
+    if (type.startsWith('section.')) console.log();
+  }
+
+  /**
+   * @param {string} type 
+   * @param {string} message
+   * @param {(Object<string, string>|string[])} [placeholders]
+   */
+  static write(type, message, placeholders = {}) {
+    process.stdout.write(this.out(type, message, placeholders));
+  }
+
+  /**
    * @param {Object<string, string[][]>} colors 
    */
   constructor(colors) {
@@ -79,14 +102,15 @@ module.exports = class Color {
 
   get fallback() {
     return {
-      info: [['white'], ['green']],
+      info: [['white'], ['cyan']],
       note: [['magenta', 'underscore'], ['green', 'underscore']],
-      abort: [['bgRed'], ['bgRed', 'underscore']],
-      success: [['bgGreen'], ['bgMagenta']],
       warning: [['yellow'], ['green']],
       error: [['red'], ['magenta']],
       question: [['green'], ['magenta']],
       input: [['cyan']],
+      'section.success': [['bgGreen', 'black'], ['bgMagenta']],
+      'section.warning': [['bgYellow', 'black'], ['bgYellow', 'blue']],
+      'section.abort': [['bgRed'], ['bgRed', 'underscore']],
     };
   }
 
@@ -118,8 +142,8 @@ module.exports = class Color {
     if (!definition[1]) definition.push(definition[0]);
     if (definition) {
       return {
-        message: definition[0].reduce(s, c => s + c, ''),
-        placeholder: definition[1].reduce(s, c => s + c, ''),
+        message: definition[0].reduce((s, c) => s + Color.codes[c], ''),
+        placeholder: definition[1].reduce((s, c) => s + Color.codes[c], ''),
       };
     } else {
       return {

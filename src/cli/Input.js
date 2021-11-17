@@ -1,18 +1,18 @@
 const Color = require('./Color');
+const Readline = require('readline');
 
 module.exports = class Input {
 
   /**
    * @param {string} message 
-   * @param {(string[]|Object<string, string>)} placeholders
    * @param {import('../../types').C_InputOptions} options
    * @returns {*}
    */
-  static async input(message, placeholders = {}, options = {}) {
+  static async input(message, options = {}) {
     let valid = true;
     let answer = '';
     do {
-      answer = await this.doInput(message, placeholders);
+      answer = await this.doInput(message, options.placeholders || {});
       if (typeof options.validate === 'function') {
         const error = await options.validate(answer, options);
         if (typeof error === 'string') {
@@ -50,24 +50,36 @@ module.exports = class Input {
       });
     });
   }
+
+  /**
+   * @param {import('../../types').C_InputOptions} options
+   * @param {string} error
+   * @returns {import('../../types').C_InputOptions}
+   */
+  static optionsNotEmpty(options = {}, error = 'Required') {
+    options.validate = (answer) => {
+      if (answer.length === 0) return error;
+    };
+    return options;
+  }
   
   /**
+   * @param {import('../../types').C_InputOptions} options
    * @param {string[]} yes 
    * @param {string[]} no 
    * @param {string} error
    * @returns {import('../../types').C_InputOptions}
    */
-  static optionsBoolean(yes = ['y'], no = ['n'], error = null) {
-    return {
-      validate: (answer) => {
-        if (!yes.includes(answer) && !no.includes(answer)) return error || 'Please answer only with [' + yes.join(', ') + '] for yes or [' + no.join(', ') + '] for no.';
-      },
-      transform: (answer) => {
-        if (yes.includes(answer)) return true;
-        if (no.includes(answer)) return false;
-        return null;
-      }
+  static optionsBoolean(options = {}, yes = ['y'], no = ['n'], error = null) {
+    options.validate = (answer) => {
+      if (!yes.includes(answer) && !no.includes(answer)) return error || 'Please answer only with [' + yes.join(', ') + '] for yes or [' + no.join(', ') + '] for no.';
     };
+    options.transform = (answer) => {
+      if (yes.includes(answer)) return true;
+      if (no.includes(answer)) return false;
+      return null;
+    };
+    return options;
   }
 
 }

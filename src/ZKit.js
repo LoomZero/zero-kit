@@ -37,7 +37,7 @@ module.exports = class ZKit {
     if (this.name === null) {
       throw new ZeroError('App must be defined.');
     }
-    const answer = await Input.input('Are you sure to delete all configs regarding the {title}? (y/n): ', {title: this.title}, Input.optionsBoolean());
+    const answer = await Input.input('Are you sure to delete all configs regarding the {title}? (y/n): ', Input.optionsBoolean({placeholders: {title: this.title}}));
     if (!answer) {
       console.log(Color.out('abort', 'Abort uninstall of {title}', {title: this.title}));
       return;
@@ -47,7 +47,7 @@ module.exports = class ZKit {
     if (FS.existsSync(this.storage.root)) {
       if (FS.readdirSync(this.storage.root).length === 0) {
         console.log(Color.out('note', 'There are no configs from zero packages.'))
-        const answer = await Input.input('Do you want to clean up all zero config files? (y/n): ', {}, Input.optionsBoolean());
+        const answer = await Input.input('Do you want to clean up all zero config files? (y/n): ', Input.optionsBoolean());
         if (!answer) {
           console.log(Color.out('abort', 'Abort cleanup', {title: this.title}));
           return;

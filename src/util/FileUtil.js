@@ -46,14 +46,14 @@ module.exports = class FileUtil {
     } 
     for (const file of FS.readdirSync(current)) {
       const local = Path.join(current, file);
-      const rel = Path.join(relative, file);
+      const rel = relative ? Path.join(relative, file) : file;
 
       if (FS.statSync(local).isFile()) {
-        callback(local, path, rel), info;
-      } else {
-        if (revert) FileUtil.fileWalk(path, callback, revert, rel);
         callback(local, path, rel, info);
-        if (!revert) FileUtil.fileWalk(path, callback, revert, rel);
+      } else {
+        if (revert) FileUtil.fileWalk(path, callback, revert, info, rel);
+        callback(local, path, rel, info);
+        if (!revert) FileUtil.fileWalk(path, callback, revert, info, rel);
       }
     }
   }
@@ -63,7 +63,7 @@ module.exports = class FileUtil {
    * @param {import('../../types').C_FileWalker} callback
    */
   static removePath(path, callback) {
-    FileUtil.fileWalk(path, (file, path, relative) => {
+    FileUtil.fileWalk(path, (file, path, relative, info) => {
       callback(file, path, relative, info);
       if (FS.statSync(file).isFile()) {
         FS.unlinkSync(file);
@@ -112,6 +112,7 @@ module.exports = class FileUtil {
   static prepareDir(root, path, isFile = true) {
     root = Path.normalize(root);
     path = Path.normalize(path);
+    
     if (isFile) path = Path.dirname(path);
     if (path.startsWith(root)) {
       path = path.substring(root.length);

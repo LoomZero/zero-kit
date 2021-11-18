@@ -35,7 +35,11 @@ module.exports = class CLITable {
   add(...items) {
     for (const item of items) {
       if (Array.isArray(item)) {
-        this.table.push(item.map(v => v + ''));
+        if (item.length === 0) {
+          this.table.push(['']);
+        } else {
+          this.table.push(item.map(v => v + ''));
+        }
       } else {
         const value = [];
         for (const id in this.header) {

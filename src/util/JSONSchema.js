@@ -9,6 +9,7 @@ module.exports = class JSONSchema {
     try {
       this._PackageSchema = require('jsonschema');
     } catch (error) {
+      Color.log('note', 'NOTE: Install package {package} to use the class JSONSchema.', {package: 'jsonschema'});
       throw new DependencyError('JSONSchema', 'jsonschema');
     }
     return this._PackageSchema;

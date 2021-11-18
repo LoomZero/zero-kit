@@ -9,7 +9,7 @@ module.exports = class JSONSchema {
     try {
       this._PackageSchema = require('jsonschema');
     } catch (error) {
-      throw new DependencyError('JSONSchema', 'jsonschema');
+      throw new DependencyError('zero-kit/src/util/JSONSchema', 'jsonschema').logError();
     }
     return this._PackageSchema;
   }
@@ -22,7 +22,7 @@ module.exports = class JSONSchema {
         this._PackageSimilarity = require('string-similarity');
       }
     } catch (error) {
-      Color.log('note', 'NOTE: Install package {package} to improve JSONSchema validate.', {package: 'string-similarity'});
+      new DependencyError('zero-kit/src/util/JSONSchema', 'string-similarity').logNote();
       console.log();
       this._PackageSimilarity = null;
     }

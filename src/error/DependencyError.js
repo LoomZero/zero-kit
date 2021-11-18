@@ -14,9 +14,27 @@ module.exports = class DependencyError extends ZeroError {
     super(message, context);
     this.subject = subject;
     this.dependency = dependency;
+  }
 
-    Color.log('section.abort', 'Install package {dependency} to use the class {subject}.', {subject, dependency});
-    Color.log('note', 'NOTE: Install package via "{command}"', {command: 'npm install ' + dependency});
+  /**
+   * @param {(string|null)} message
+   * @returns {this}
+   */
+  logError(message = null) {
+    if (message === null) message = 'Install package {dependency} to use the class {subject}.';
+    Color.log('section.abort', message, {subject: this.subject, dependency: this.dependency});
+    Color.log('note', 'NOTE: Install package via "{command}"', {command: 'npm install ' + this.dependency});
+    return this;
+  }
+
+  /**
+   * @param {(string|null)} message
+   * @returns {this}
+   */
+  logNote(message = null) {
+    if (message === null) message = 'NOTE: Install package {dependency} to improve {subject}.';
+    Color.log('note', message, {subject: this.subject, dependency: this.dependency});
+    return this;
   }
 
 }

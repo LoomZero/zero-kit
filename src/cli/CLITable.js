@@ -23,7 +23,7 @@ module.exports = class CLITable {
       head.push(this.header[id]);
     }
 
-    this.table = new Table({
+    this.table = new CLITable.Table({
       head: head,
     });
   }

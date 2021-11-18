@@ -67,7 +67,7 @@ module.exports = class Input {
    * @param {import('../../types').C_InputOptions} options
    * @param {string[]} yes 
    * @param {string[]} no 
-   * @param {string} error
+   * @param {(string|null)} error 
    * @returns {import('../../types').C_InputOptions}
    */
   static optionsBoolean(options = {}, yes = ['y'], no = ['n'], error = null) {
@@ -78,6 +78,18 @@ module.exports = class Input {
       if (yes.includes(answer)) return true;
       if (no.includes(answer)) return false;
       return null;
+    };
+    return options;
+  }
+
+  /**
+   * @param {import('../../types').C_InputOptions} options
+   * @param {string[]} items 
+   * @param {(string|null)} error 
+   */
+  static optionsSelect(options = [], error = null) {
+    options.validate = (answer) => {
+      if (!items.includes(answer)) return error || 'Please use on of this options [' + items.join(', ') + ']';
     };
     return options;
   }

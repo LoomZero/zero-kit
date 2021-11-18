@@ -1,15 +1,18 @@
 const Color = require('../cli/Color');
 const DependencyError = require('../error/DependencyError');
 
-/** @type {import('jsonschema')} */
-let Schema = null;
-try {
-  Schema = require('jsonschema');
-} catch (error) {
-  throw new DependencyError('JSONSchema', 'jsonschema');
-}
-
 module.exports = class JSONSchema {
+
+  /** @returns {import('jsonschema')} */
+  static get Schema() {
+    if (this._PackageSchema !== undefined) return this._PackageSchema;
+    try {
+      this._PackageSchema = require('jsonschema');
+    } catch (error) {
+      throw new DependencyError('JSONSchema', 'jsonschema');
+    }
+    return this._PackageSchema;
+  }
 
   /** @returns {import('string-similarity')} */
   static get Similarity() {
@@ -39,7 +42,7 @@ module.exports = class JSONSchema {
    * @returns {import('jsonschema').ValidatorResult}
    */
   validate(object, options = {}) {
-    return Schema.validate(object, this.schema, options);
+    return JSONSchema.Schema.validate(object, this.schema, options);
   }
 
   /**

@@ -1,13 +1,16 @@
 const DependencyError = require('../error/DependencyError');
 
-let Table = null;
-try {
-  Table = require('cli-table');
-} catch (error) {
-  throw new DependencyError('CLITable', 'cli-table', null, { error });
-}
-
 module.exports = class CLITable {
+
+  static get Table() {
+    if (this._PackageCLITable !== undefined) return this._PackageCLITable;
+    try {
+      this._PackageCLITable = require('cli-table');
+    } catch (error) {
+      throw new DependencyError('zero-kit/src/cli/CLITable', 'cli-table', null, { error }).logError();
+    }
+    return this._PackageCLITable;
+  }
 
   /**
    * @param {Object<string, string>} header 

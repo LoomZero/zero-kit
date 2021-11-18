@@ -88,6 +88,7 @@ module.exports = class Input {
    * @param {(string|null)} error 
    */
   static optionsSelect(options = {}, items = [], error = null) {
+    items = items.map(v => v + '');
     options.validate = (answer) => {
       if (!items.includes(answer)) return error || 'Please use on of this options [' + items.join(', ') + ']';
     };

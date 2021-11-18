@@ -1,3 +1,4 @@
+const Color = require('../cli/Color');
 const ZeroError = require('./ZeroError');
 
 module.exports = class DependencyError extends ZeroError {
@@ -13,6 +14,8 @@ module.exports = class DependencyError extends ZeroError {
     super(message, context);
     this.subject = subject;
     this.dependency = dependency;
+
+    Color.log('section.abort', 'NOTE: Install package {dependency} to use the class {subject}.', {subject, dependency});
   }
 
 }

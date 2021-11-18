@@ -15,7 +15,8 @@ module.exports = class DependencyError extends ZeroError {
     this.subject = subject;
     this.dependency = dependency;
 
-    Color.log('section.abort', 'NOTE: Install package {dependency} to use the class {subject}.', {subject, dependency});
+    Color.log('section.abort', 'Install package {dependency} to use the class {subject}.', {subject, dependency});
+    Color.log('note', 'NOTE: Install package via "{command}"', {command: 'npm install ' + dependency});
   }
 
 }

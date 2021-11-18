@@ -168,7 +168,7 @@ module.exports = class Color {
   create(color) {
     return (message, placeholders) => {
       return color.message + Reflection.replaceMessage(message, placeholders || {}, (placeholder) => {
-        return this.reset + color.placeholder + placeholder + color.message;
+        return this.reset + color.placeholder + placeholder + this.reset + color.message;
       }) + this.reset;
     };
   }

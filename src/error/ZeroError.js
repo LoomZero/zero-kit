@@ -1,3 +1,5 @@
+const Reflection = require('../util/Reflection');
+
 module.exports = class ZeroError extends Error {
 
   /**
@@ -14,6 +16,10 @@ module.exports = class ZeroError extends Error {
    */
   info() {
     return this.message + ' ' + JSON.stringify(this.context);
+  }
+
+  toDebug() {
+    return JSON.stringify(Reflection.debugContext(this.context));
   }
 
 }

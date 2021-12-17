@@ -280,4 +280,79 @@ module.exports = class Reflection {
     return value;
   }
 
+  /**
+   * @param {(Object|Array)} value
+   * @returns {(Object|Array)}
+   */
+  static debugContext(value) {
+    if (Array.isArray(value)) {
+      return this.debugContextArray(value);
+    } else {
+      return this.debugContextObject(value);
+    }
+  }
+
+  /**
+   * @param {Object} object 
+   * @returns {Object}
+   */
+  static debugContextObject(object) {
+    const cleaned = {};
+    for (const index in object) {
+      cleaned[index] = this.debugContextItem(object[index]);
+    }
+    return cleaned;
+  }
+
+  /**
+   * @param {Array} array 
+   * @returns {Array}
+   */
+  static debugContextArray(array) {
+    const cleaned = [];
+    for (const index in array) {
+      cleaned.push(this.debugContextItem(array[index]));
+    }
+    return cleaned;
+  }
+
+  /**
+   * @param {*} value 
+   */
+  static debugContextItem(value) {
+    if (Array.isArray(value)) {
+      return this.debugContextArrayDescription(value);
+    } else if (typeof value === 'object') {
+      return this.debugContextClassDescription(value);
+    } else {
+      return value
+    }
+  }
+
+  /**
+   * @param {Array} array 
+   * @returns {string}
+   */
+  static debugContextArrayDescription(array) {
+    return 'Array[' + array.length + ']';
+  }
+
+  /**
+   * @param {Object} object
+   * @returns {string}
+   */
+  static debugContextClassDescription(object) {
+    let add = '';
+    if (object === null || object === undefined) {
+      return object;
+    } else if (typeof object.toDebug === 'function') {
+      add = object.toDebug();
+    } else if (object instanceof Date) {
+      add = object.toString();
+    } else if (object instanceof RegExp) {
+      add = object.toString();
+    }
+    return 'CLASS:' + object.constructor.name + (add ? '[' + add + ']' : '');
+  }
+
 }

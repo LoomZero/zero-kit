@@ -105,6 +105,7 @@ module.exports = class Color {
       info: [['white'], ['cyan']],
       note: [['magenta', 'underscore'], ['green', 'underscore']],
       debug: [['magenta'], ['green']],
+      'debug.title': [['bgMagenta', 'white'], ['green']],
       warning: [['yellow'], ['green']],
       error: [['red'], ['magenta']],
       question: [['green'], ['magenta']],

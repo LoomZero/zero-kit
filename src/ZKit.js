@@ -21,9 +21,10 @@ module.exports = class ZKit {
    */
   setDebugHandler() {
     const old = this.handler.emit;
+    const handler = this.handler;
     this.handler.emit = function() {
-      old.call(this.handler, 'debug:event', ...arguments);
-      old.apply(this.handler, arguments);
+      old.call(handler, 'debug:event', ...arguments);
+      old.apply(handler, arguments);
     };
   }
 

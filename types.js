@@ -21,7 +21,12 @@
  * @callback C_InputValidate
  * @param {string} answer
  * @param {C_InputOptions} options
- * @returns {(string|boolean)}
+ * @returns {(string|boolean|Array)}
+ */
+
+/**
+ * @callback C_InputEvent
+ * @param {C_InputOptions} options
  */
 
 /**
@@ -42,8 +47,19 @@
 /**
  * @typedef {Object} C_InputOptions
  * @property {(string[]|Object<string, string>)} [placeholders]
- * @property {C_InputTransform} [transform]
- * @property {C_InputValidate} [validate]
+ * @property {(string|C_InputEvent)} [before]
+ * @property {(C_InputTransform|C_InputTransform[])} [transform]
+ * @property {(C_InputValidate|C_InputValidate[])} [validate]
+ * @property {(string|C_InputEvent)} [after]
+ * @property {any} [fallback]
+ */
+
+/**
+ * @typedef {object} C_InputArraySplitOptions
+ * @property {string} seperator
+ * @property {boolean} [trimItems] 
+ * @property {import('../../types').C_InputTransform} [itemTransform] 
+ * @property {(string|boolean)} [notEmpty]
  */
 
 module.exports = {};

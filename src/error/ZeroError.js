@@ -9,4 +9,11 @@ module.exports = class ZeroError extends Error {
     this.context = context;
   }
 
+  /**
+   * @returns {string}
+   */
+  info() {
+    return this.message + ' ' + JSON.stringify(this.context);
+  }
+
 }

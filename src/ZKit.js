@@ -6,7 +6,7 @@ const Input = require('./cli/Input');
 const ZeroError = require('./error/ZeroError');
 const Color = require('./cli/Color');
 
-module.exports = class ZKit {
+module.exports = class ZKit {
 
   constructor() {
     this.handler = new Handler();
@@ -14,6 +14,17 @@ module.exports = class ZKit {
     this.title = null;
     this.app = null;
     this.storage = new StorageManager(this);
+  }
+
+  /**
+   * Patch the event handler to emit always a 'debug:event' event before execution
+   */
+  setDebugHandler() {
+    const old = this.handler.emit;
+    this.handler.emit = function() {
+      old.call(this.handler, 'debug:event', ...arguments);
+      old.apply(this.handler, arguments);
+    };
   }
 
   /**

@@ -11,22 +11,43 @@ module.exports = class Input {
   static async input(message, options = {}) {
     let valid = true;
     let answer = '';
+
+    options = this.optionsMerge(options);
+
     do {
+      if (typeof options.before === 'string') {
+        Color.log('info', options.before);
+      } else if (typeof options.before === 'function') {
+        options.before(options);
+      }
+      
       answer = await this.doInput(message, options.placeholders || {});
-      if (typeof options.validate === 'function') {
-        const error = await options.validate(answer, options);
+      for (const func of options.validate) {
+        const error = await func(answer, options);
+
         if (typeof error === 'string') {
-          console.log(Color.out('error', error));
+          Color.log('error', error);
           valid = false;
+          break;
+        } else if (Array.isArray(error)) {
+          Color.log('error', error[0], error[1] || {});
+          valid = false;
+          break;
         } else if (error === false) {
-          console.log(Color.out('error', 'Your input is not valid.'));
-        } else {
-          valid = true;
+          Color.log('error', 'Your input is not valid.');
+          valid = false;
+          break;
         }
       }
+
+      if (typeof options.after === 'string') {
+        Color.log('info', options.after);
+      } else if (typeof options.after === 'function') {
+        options.after(options);
+      }
     } while (!valid);
-    if (typeof options.transform === 'function') {
-      return await options.transform(answer, options);
+    for (const func of options.transform) {
+      answer = await func(answer, options);
     }
     return answer;
   }
@@ -49,6 +70,45 @@ module.exports = class Input {
         res(answer);
       });
     });
+  }
+
+  /**
+   * @param {import('../../types').C_InputOptions} options 
+   * @param  {...import('../../types').C_InputOptions} merge
+   */
+  static optionsMerge(options, ...merge) {
+    if (typeof options.validate === 'function') {
+      options.validate = [options.validate];
+    } else if (!Array.isArray(options.validate)) {
+      options.validate = [];
+    }
+
+    if (typeof options.transform === 'function') {
+      options.transform = [options.transform];
+    } else if (!Array.isArray(options.transform)) {
+      options.transform = [];
+    }
+
+    for (const item of merge) {
+      if (typeof item.validate === 'function') {
+        options.validate.push(item.validate);
+      } else if (Array.isArray(item.validate)) {
+        options.validate = options.validate.concat(item.validate);
+      }
+
+      if (typeof item.transform === 'function') {
+        options.transform.push(item.transform);
+      } else if (Arrray.isArray(item.transform)) {
+        options.transform = options.transform.concat(item.transform);
+      }
+
+      for (const index in item) {
+        if (index === 'transform' || index === 'validate') continue;
+        options[index] = item[index];
+      }
+    }
+
+    return options;
   }
 
   /**
@@ -86,6 +146,7 @@ module.exports = class Input {
    * @param {import('../../types').C_InputOptions} options
    * @param {string[]} items 
    * @param {(string|null)} error 
+   * @returns {import('../../types').C_InputOptions}
    */
   static optionsSelect(options = {}, items = [], error = null) {
     items = items.map(v => v + '');
@@ -93,6 +154,75 @@ module.exports = class Input {
       if (!items.includes(answer)) return error || 'Please use on of this options [' + items.join(', ') + ']';
     };
     return options;
+  }
+
+  /**
+   * @param {import('../../types').C_InputOptions} options 
+   * @param {string} seperator
+   * @param {import('../../types').C_InputArraySplitOptions} arrayOptions
+   * @returns {import('../../types').C_InputOptions}
+   */
+  static optionsTermArray(options, seperator = ',', arrayOptions = {}) {
+    arrayOptions.seperator = seperator;
+    if (arrayOptions.notEmpty) {
+      this.optionsNotEmpty(options, (typeof arrayOptions.notEmpty === 'string' ? arrayOptions.notEmpty : 'Required'));
+    }
+    options.transform = (answer, inneroptions) => {
+      let array = answer.split(arrayOptions.seperator);
+      if (arrayOptions.trimItems) array = array.map(v => v.trim());
+      if (arrayOptions.itemTransform) array = array.map(v => arrayOptions.itemTransform(v, inneroptions));
+      return array.filter(v => v);
+    };
+    return options;
+  }
+
+  /**
+   * @param {import('../../types').C_InputOptions} options 
+   * @param {string[][]} items
+   * @param {string} error
+   * @returns {import('../../types').C_InputOptions}
+   */
+  static optionsSelectAlias(options = {}, items = [], error = null) {
+    const validates = items.reduce((v, c) => v.concat(c), []);
+    options.validate = (answer) => {
+      if (!validates.includes(answer)) return error || Color.out('info', 'Please use on of this options [{options}]', {options: items.map(v => v[0]).join(', ')});
+    };
+    options.transform = (answer) => {
+      const item = items.find(v => v.includes(answer));
+      if (item) return item[0];
+    };
+    return options;
+  }
+
+  /**
+   * @param {import('../../types').C_InputOptions} options
+   * @param {import('./CLITable')} table 
+   * @param {string} id 
+   * @param  {...string} aliases 
+   * @returns {import('../../types').C_InputOptions}
+   */
+  static optionsTable(options, table, id, ...aliases) {
+    const indexes = [];
+    let count = 0;
+    for (const index in table.header) {
+      if (index === id) {
+        indexes.unshift(count);
+      } else if (aliases.includes(index)) {
+        indexes.push(count);
+      }
+      count++;
+    }
+
+
+    const items = [];
+    table.table.map(v => {
+      const item = [];
+      for (const index of indexes) {
+        item.push(v[index]);
+      }
+      items.push(item);
+    });
+    return this.optionsSelectAlias(options, items);
   }
 
 }

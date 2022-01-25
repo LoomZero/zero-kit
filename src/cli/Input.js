@@ -21,8 +21,9 @@ module.exports = class Input {
         options.before(options);
       }
       
-      answer = await this.doInput(message, options.placeholders || {});
+      answer = await this.doInput(message, options.placeholders || {});
       for (const func of options.validate) {
+        valid = true;
         const error = await func(answer, options);
 
         if (typeof error === 'string') {

@@ -14,13 +14,24 @@ module.exports = class CLITable {
 
   /**
    * @param {Object<string, string>} header 
+   * @param {Object<string, string>[]} rows 
+   * @returns {CLITable}
+   */
+  static create(header, rows) {
+    const table = new CLITable(header);
+    table.add(...rows);
+    return table;
+  }
+
+  /**
+   * @param {Object<string, string>} header 
    */
   constructor(header) {
     this.header = header;
 
     const head = [];
     for (const id in this.header) {
-      head.push(this.header[id]);
+      head.push(this.header[id] + '');
     }
 
     this.table = new CLITable.Table({

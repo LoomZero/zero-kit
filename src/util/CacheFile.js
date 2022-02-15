@@ -47,8 +47,10 @@ module.exports = class CacheFile {
     if (date === null) {
       this.file.set('data', await this.builder());
       this.file.set('date', Date.now());
-      this.kit.handler.emit('cache:build', this);
+      this.kit.handler.emit('cache:build', this.name, this);
       this.file.save();
+    } else {
+      this.kit.handler.emit('cache:use', this.name, this);
     }
     return this.file.get('data');
   }

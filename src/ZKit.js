@@ -12,7 +12,14 @@ module.exports = class ZKit {
     this.name = null;
     this.title = null;
     this.app = null;
-    this.storage = null;
+    this._storage = null;
+  }
+
+  /**
+   * @returns {import('./StorageManager')}
+   */
+  get storage() {
+    return this._storage;
   }
 
   /**
@@ -45,9 +52,9 @@ module.exports = class ZKit {
 
   async setup() {
     const StorageManager = require('./StorageManager');
-    this.storage = new StorageManager(this);
+    this._storage = new StorageManager(this);
     this.handler.emit('setup');
-    this.handler.emit('setup:cache', this.storage);
+    this.handler.emit('setup:cache', this._storage);
   }
 
   async uninstall() {
@@ -61,8 +68,8 @@ module.exports = class ZKit {
     }
     this.handler.emit('uninstall:app:' + this.name, this.name);
     this.handler.emit('uninstall:app', this.name);
-    if (FS.existsSync(this.storage.root)) {
-      if (FS.readdirSync(this.storage.root).length === 0) {
+    if (FS.existsSync(this._storage.root)) {
+      if (FS.readdirSync(this._storage.root).length === 0) {
         console.log(Color.out('note', 'There are no configs from zero packages.'))
         const answer = await Input.input('Do you want to clean up all zero config files? (y/n): ', Input.optionsBoolean());
         if (!answer) {

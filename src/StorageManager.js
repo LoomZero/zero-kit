@@ -113,18 +113,10 @@ module.exports = class StorageManager {
    * @param {Function} builder 
    * @returns {CacheFile}
    */
-  setCache(name, tags, builder) {
-    if (this._cache[name] === undefined) {
+  cache(name, tags, builder) {
+    if (tags && builder && this._cache[name] === undefined) {
       this._cache[name] = new CacheFile(this.kit, name, tags, this.path('cache', name + '.json'), builder);
     }
-    return this._cache[name];
-  }
-
-  /**
-   * @param {string} name 
-   * @returns {CacheFile}
-   */
-  cache(name) {
     if (this._cache[name] === undefined) throw new ZeroError('No cache with name "' + name + '" defined.');
     return this._cache[name];
   }

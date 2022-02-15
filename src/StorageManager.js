@@ -5,6 +5,7 @@ const Path = require('path');
 const FileUtil = require('./util/FileUtil');
 const JSONFile = require('./util/JSONFile');
 const ZeroError = require('./error/ZeroError');
+const CacheFile = require('./util/CacheFile');
 
 module.exports = class StorageManager {
 
@@ -13,6 +14,7 @@ module.exports = class StorageManager {
    */
   constructor(kit) {
     this.kit = kit;
+    this._cache = {};
 
     this.kit.handler.on('uninstall:app', (name) => {
       if (FS.existsSync(this.path())) {
@@ -32,6 +34,14 @@ module.exports = class StorageManager {
     });
     this.kit.handler.on('setup', () => {
       this.ensure(this.path(), false);
+    });
+    this.kit.handler.on('cache:clear', (/** @type {import('../types').T_CacheQuery} */query) => {
+      if (query.years) query.date = Date.now() - query.years * 365 * 24 * 60 * 60 * 1000;
+      if (query.days) query.date = Date.now() - query.days * 24 * 60 * 60 * 1000;
+
+      for (const name in this._cache) {
+        this._cache[name].doClear(query);
+      }
     });
   }
 
@@ -83,6 +93,36 @@ module.exports = class StorageManager {
    */
   config(file) {
     return new JSONFile(this.path(file));
+  }
+
+  /**
+   * @param {string} name 
+   * @param {string[]} tags 
+   * @param {Function} builder 
+   * @returns {CacheFile}
+   */
+  setCache(name, tags, builder) {
+    if (this._cache[name] === undefined) {
+      this._cache[name] = new CacheFile(this.kit, name, tags, this.path('cache', name + '.json'), builder);
+    }
+    return this._cache[name];
+  }
+
+  /**
+   * @param {string} name 
+   * @returns {CacheFile}
+   */
+  cache(name) {
+    if (this._cache[name] === undefined) throw new ZeroError('No cache with name "' + name + '" defined.');
+    return this._cache[name];
+  }
+
+  /**
+   * @param {(string|import('../types').T_CacheQuery)} query
+   */
+  clearCache(query = 'all') {
+    if (typeof query === 'string') query = {name: query};
+    this.kit.handler.emit('cache:clear', query);
   }
 
   checkApp() {

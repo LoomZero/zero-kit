@@ -20,19 +20,19 @@
 /**
  * @callback C_InputValidate
  * @param {string} answer
- * @param {C_InputOptions} options
+ * @param {T_InputOptions} options
  * @returns {(string|boolean|Array)}
  */
 
 /**
  * @callback C_InputEvent
- * @param {C_InputOptions} options
+ * @param {T_InputOptions} options
  */
 
 /**
  * @callback C_InputTransform
  * @param {string} answer
- * @param {C_InputOptions} options
+ * @param {T_InputOptions} options
  * @returns {*}
  */
 
@@ -45,7 +45,7 @@
  */
 
 /**
- * @typedef {Object} C_InputOptions
+ * @typedef {Object} T_InputOptions
  * @property {(string[]|Object<string, string>)} [placeholders]
  * @property {(string|C_InputEvent)} [before]
  * @property {(C_InputTransform|C_InputTransform[])} [transform]
@@ -55,11 +55,20 @@
  */
 
 /**
- * @typedef {object} C_InputArraySplitOptions
+ * @typedef {object} T_InputArraySplitOptions
  * @property {string} seperator
  * @property {boolean} [trimItems] 
  * @property {import('../../types').C_InputTransform} [itemTransform] 
  * @property {(string|boolean)} [notEmpty]
+ */
+
+/**
+ * @typedef {object} T_CacheQuery
+ * @property {string} [name]
+ * @property {string[]} [tags]
+ * @property {number} [date]
+ * @property {number} [days]
+ * @property {number} [years]
  */
 
 module.exports = {};

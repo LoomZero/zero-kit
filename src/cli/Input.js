@@ -5,7 +5,7 @@ module.exports = class Input {
 
   /**
    * @param {string} message 
-   * @param {import('../../types').C_InputOptions} options
+   * @param {import('../../types').T_InputOptions} options
    * @returns {*}
    */
   static async input(message, options = {}) {
@@ -74,8 +74,8 @@ module.exports = class Input {
   }
 
   /**
-   * @param {import('../../types').C_InputOptions} options 
-   * @param  {...import('../../types').C_InputOptions} merge
+   * @param {import('../../types').T_InputOptions} options 
+   * @param  {...import('../../types').T_InputOptions} merge
    */
   static optionsMerge(options, ...merge) {
     if (typeof options.validate === 'function') {
@@ -113,9 +113,9 @@ module.exports = class Input {
   }
 
   /**
-   * @param {import('../../types').C_InputOptions} options
+   * @param {import('../../types').T_InputOptions} options
    * @param {string} error
-   * @returns {import('../../types').C_InputOptions}
+   * @returns {import('../../types').T_InputOptions}
    */
   static optionsNotEmpty(options = {}, error = 'Required') {
     options.validate = (answer) => {
@@ -125,11 +125,11 @@ module.exports = class Input {
   }
   
   /**
-   * @param {import('../../types').C_InputOptions} options
+   * @param {import('../../types').T_InputOptions} options
    * @param {string[]} yes 
    * @param {string[]} no 
    * @param {(string|null)} error 
-   * @returns {import('../../types').C_InputOptions}
+   * @returns {import('../../types').T_InputOptions}
    */
   static optionsBoolean(options = {}, yes = ['y'], no = ['n'], error = null) {
     options.validate = (answer) => {
@@ -144,10 +144,10 @@ module.exports = class Input {
   }
 
   /**
-   * @param {import('../../types').C_InputOptions} options
+   * @param {import('../../types').T_InputOptions} options
    * @param {string[]} items 
    * @param {(string|null)} error 
-   * @returns {import('../../types').C_InputOptions}
+   * @returns {import('../../types').T_InputOptions}
    */
   static optionsSelect(options = {}, items = [], error = null) {
     items = items.map(v => v + '');
@@ -158,10 +158,10 @@ module.exports = class Input {
   }
 
   /**
-   * @param {import('../../types').C_InputOptions} options 
+   * @param {import('../../types').T_InputOptions} options 
    * @param {string} seperator
-   * @param {import('../../types').C_InputArraySplitOptions} arrayOptions
-   * @returns {import('../../types').C_InputOptions}
+   * @param {import('../../types').T_InputArraySplitOptions} arrayOptions
+   * @returns {import('../../types').T_InputOptions}
    */
   static optionsTermArray(options, seperator = ',', arrayOptions = {}) {
     arrayOptions.seperator = seperator;
@@ -178,10 +178,10 @@ module.exports = class Input {
   }
 
   /**
-   * @param {import('../../types').C_InputOptions} options 
+   * @param {import('../../types').T_InputOptions} options 
    * @param {string[][]} items
    * @param {string} error
-   * @returns {import('../../types').C_InputOptions}
+   * @returns {import('../../types').T_InputOptions}
    */
   static optionsSelectAlias(options = {}, items = [], error = null) {
     const validates = items.reduce((v, c) => v.concat(c), []);
@@ -196,11 +196,11 @@ module.exports = class Input {
   }
 
   /**
-   * @param {import('../../types').C_InputOptions} options
+   * @param {import('../../types').T_InputOptions} options
    * @param {import('./CLITable')} table 
    * @param {string} id 
    * @param  {...string} aliases 
-   * @returns {import('../../types').C_InputOptions}
+   * @returns {import('../../types').T_InputOptions}
    */
   static optionsTable(options, table, id, ...aliases) {
     const indexes = [];

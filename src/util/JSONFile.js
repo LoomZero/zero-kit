@@ -7,9 +7,11 @@ module.exports = class JSONFile {
 
   /**
    * @param {string} path 
+   * @param {boolean} format
    */
-  constructor(path) {
+  constructor(path, format = true) {
     this.path = path;
+    this.format = format;
     this.data = null;
   }
 
@@ -36,7 +38,11 @@ module.exports = class JSONFile {
    */
   save() {
     ZKit.storage.ensure(this.path);
-    FS.writeFileSync(this.path, JSON.stringify(this.data, null, '  '));
+    if (this.format) {
+      FS.writeFileSync(this.path, JSON.stringify(this.data, null, '  '));
+    } else {
+      FS.writeFileSync(this.path, JSON.stringify(this.data));
+    }
     return this;
   }
 
@@ -55,6 +61,7 @@ module.exports = class JSONFile {
    * @returns {this}
    */
   set(name, value) {
+    if (this.data === null) this.load();
     Reflection.setDeep(this.data, name, value);
     return this;
   }

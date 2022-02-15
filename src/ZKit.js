@@ -1,7 +1,6 @@
 const Handler = require('events');
 const FS = require('fs');
 
-const StorageManager = require('./StorageManager');
 const Input = require('./cli/Input');
 const ZeroError = require('./error/ZeroError');
 const Color = require('./cli/Color');
@@ -13,19 +12,22 @@ module.exports = class ZKit {
     this.name = null;
     this.title = null;
     this.app = null;
-    this.storage = new StorageManager(this);
+    this.storage = null;
   }
 
   /**
    * Patch the event handler to emit always a 'debug:event' event before execution
+   * 
+   * @param {Function}
    */
-  setDebugHandler() {
+  setDebugHandler(listener = null) {
     const old = this.handler.emit;
     const handler = this.handler;
     this.handler.emit = function() {
       old.call(handler, 'debug:event', ...arguments);
       old.apply(handler, arguments);
     };
+    if (listener) this.handler.on('debug:event', listener);
   }
 
   /**
@@ -42,7 +44,10 @@ module.exports = class ZKit {
   }
 
   async setup() {
+    const StorageManager = require('./StorageManager');
+    this.storage = new StorageManager(this);
     this.handler.emit('setup');
+    this.handler.emit('setup:cache');
   }
 
   async uninstall() {

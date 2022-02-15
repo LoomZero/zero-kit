@@ -39,8 +39,20 @@ module.exports = class StorageManager {
       if (query.years) query.date = Date.now() - query.years * 365 * 24 * 60 * 60 * 1000;
       if (query.days) query.date = Date.now() - query.days * 24 * 60 * 60 * 1000;
 
-      for (const name in this._cache) {
-        this._cache[name].doClear(query);
+      for (const file of FS.readdirSync(this.path('cache'))) {
+        const json = new JSONFile(this.path('cache', file), false);
+        
+        if (json.get('date') === null) continue;
+        if (query.name === 'all' || query.name === json.get('name') || query.tags && query.tags.find(v => json.get('tags').find(i => i.startsWith(v))) || !query.name && !query.tags) {
+          if (!query.date || query.date > json.get('date')) {
+            if (!this._cache[json.get('name')] || this._cache[json.get('name')].doClear(query)) {
+              json
+                .set('date', null)
+                .set('data', null)
+                .save();
+            }
+          }
+        }
       }
     });
   }

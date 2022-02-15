@@ -47,7 +47,7 @@ module.exports = class ZKit {
     const StorageManager = require('./StorageManager');
     this.storage = new StorageManager(this);
     this.handler.emit('setup');
-    this.handler.emit('setup:cache');
+    this.handler.emit('setup:cache', this.storage);
   }
 
   async uninstall() {

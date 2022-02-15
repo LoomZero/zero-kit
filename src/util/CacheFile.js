@@ -11,22 +11,30 @@ module.exports = class CacheFile {
    */
   constructor(kit, name, tags, path, builder) {
     this.kit = kit;
-    this.name = name;
-    this.tags = tags;
     this.builder = builder;
     this.file = new JSONFile(path, false);
+
+    this.file.set('name', name);
+    this.file.set('tags', tags);
+    this.file.save();
+  }
+
+  /** @returns {string} */
+  get name() {
+    return this.file.get('name');
+  }
+
+  /** @returns {string[]} */
+  get tags() {
+    return this.file.get('tags');
   }
 
   /**
    * @param {import('../../types').T_CacheQuery} query 
    */
   doClear(query) {
-    if (this.file.get('date') === null) return;
-    if (query.name === 'all' || query.name === this.name || query.tags && query.tags.find(v => this.tags.find(i => i.startsWith(v))) || !query.name && !query.tags) {
-      if (!query.date || query.date > this.file.get('date')) {
-        this.file.set('date', null).save();
-      }
-    }
+    this.file.data = null;
+    return true;
   }
 
   clear() {

@@ -111,11 +111,11 @@ module.exports = class StorageManager {
    * @param {string} name 
    * @param {string[]} tags 
    * @param {Function} builder 
-   * @param {(string|Function)} contextBuilder 
    * @param {import('../types').T_CacheQuery} clear
+   * @param {(string|Function)} contextBuilder 
    * @returns {CacheFile}
    */
-  cache(name, tags, builder, contextBuilder = 'default', clear = null) {
+  cache(name, tags, builder, clear = null, contextBuilder = 'default') {
     if (tags && builder && this._cache[name] === undefined) {
       this._cache[name] = new CacheFile(this.kit, name, tags, this.path('cache', name + '.json'), builder, contextBuilder);
       if (clear) {

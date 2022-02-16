@@ -36,6 +36,17 @@ module.exports = class JSONSchema {
     this.schema = schema;
   }
 
+  get defs() {
+    return this.schema.$defs || {};
+  }
+
+  get(schema) {
+    if (schema && schema.$ref) {
+      return this.defs[schema.$ref.split('/').pop()];
+    }
+    return schema;
+  }
+
   /**
    * @param {*} object 
    * @param {import('jsonschema').Options} options
@@ -93,17 +104,19 @@ module.exports = class JSONSchema {
     let schema = this.schema;
     for (const prop of path) {
       if (schema.properties && schema.properties[prop]) {
-        schema = schema.properties[prop];
+        schema = this.get(schema.properties[prop]);
       } else if (schema.additionalProperties) {
-        schema = schema.additionalProperties;
+        schema = this.get(schema.additionalProperties);
       } else {
         return [];
       }
     }
     const options = [];
 
-    for (const field in schema.properties) {
-      options.push(field);
+    if (schema.properties) {
+      for (const field in schema.properties) {
+        options.push(field);
+      }
     }
     return options;
   }

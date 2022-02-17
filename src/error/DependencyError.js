@@ -11,7 +11,7 @@ module.exports = class DependencyError extends ZeroError {
    */
   constructor(subject, dependency, message = null, context = {}) {
     if (message === null) message = 'The class "' + subject + '" need the dependency "' + dependency + '" please install it with "npm install --save ' + dependency + '"';
-    super(message, context);
+    super('kit.dependency', message, context);
     this.subject = subject;
     this.dependency = dependency;
   }

@@ -123,7 +123,7 @@ module.exports = class StorageManager {
         this.clearCache(clear);
       }
     }
-    if (this._cache[name] === undefined) throw new ZeroError('No cache with name "' + name + '" defined.');
+    if (this._cache[name] === undefined) throw new ZeroError('kit.storage.cache.unknown', 'No cache with name "' + name + '" defined.');
     return this._cache[name];
   }
 
@@ -137,7 +137,7 @@ module.exports = class StorageManager {
 
   checkApp() {
     if (this.kit.name === null) {
-      throw new ZeroError('App must be defined.');
+      throw new ZeroError('kit.storage.app.defined', 'App must be defined.');
     }
   }
 

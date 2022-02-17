@@ -1,5 +1,6 @@
 const Color = require('./Color');
 const Readline = require('readline');
+const ZeroError = require('../error/ZeroError');
 
 module.exports = class Input {
 
@@ -11,8 +12,20 @@ module.exports = class Input {
   static async input(message, options = {}) {
     let valid = true;
     let answer = '';
+    let readFunc = null;
 
     options = this.optionsMerge(options);
+    if (!options.type || options.type === 'input') {
+      readFunc = 'doInput';
+    } else if (options.type === 'read') {
+      readFunc = 'doRead';
+    } else {
+      throw new ZeroError('kit.input.type.unknown', 'Unknown input type "' + options.type + '"', {
+        type: options.type,
+        message,
+        options,
+      });
+    }
 
     do {
       if (typeof options.before === 'string') {
@@ -21,7 +34,8 @@ module.exports = class Input {
         options.before(options);
       }
       
-      answer = await this.doInput(message, options.placeholders || {});
+
+      answer = await this[readFunc](message, options.placeholders || {}, options);
       for (const func of options.validate) {
         valid = true;
         const error = await func(answer, options);
@@ -56,9 +70,10 @@ module.exports = class Input {
   /**
    * @param {string} message 
    * @param {(string[]|Object<string, string>)} placeholders
+   * @param {import('../../types').T_InputOptions} options
    * @returns {Promise<string>}
    */
-  static doInput(message, placeholders) {
+  static doInput(message, placeholders, options) {
     const readline = Readline.createInterface({
       input: process.stdin,
       output: process.stdout,
@@ -69,6 +84,29 @@ module.exports = class Input {
         process.stdout.write(Color.theme.reset);
         readline.close();
         res(answer);
+      });
+    });
+  }
+
+  /**
+   * @param {string} message 
+   * @param {(string[]|Object<string, string>)} placeholders
+   * @param {import('../../types').T_InputOptions} options
+   * @returns {Promise<string>}
+   */
+  static doRead(message, placeholders, options) {
+    process.stdout.write(Color.out('question', message, placeholders) + Color.theme.getColorString('input').message);
+    process.stdin.resume().setRawMode(true);
+    return new Promise(resolve => {
+      process.stdin.once('data', (input) => {
+        if (!options.blind) {
+          console.log(input + Color.theme.reset);
+        } else {
+          process.stdout.write(Color.theme.reset);
+        }
+        process.stdin.setRawMode(false);
+        process.stdin.pause();
+        resolve(input + '');
       });
     });
   }

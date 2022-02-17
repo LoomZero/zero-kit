@@ -46,12 +46,14 @@
 
 /**
  * @typedef {Object} T_InputOptions
+ * @property {string} [type] Default: 'input'. Options: 'input', 'read'.
  * @property {(string[]|Object<string, string>)} [placeholders]
  * @property {(string|C_InputEvent)} [before]
  * @property {(C_InputTransform|C_InputTransform[])} [transform]
  * @property {(C_InputValidate|C_InputValidate[])} [validate]
  * @property {(string|C_InputEvent)} [after]
  * @property {any} [fallback]
+ * @property {boolean} [blind] Only supported for type 'read'.
  */
 
 /**

@@ -24,8 +24,8 @@ module.exports = class JSONFile {
       try {
         src = FS.readFileSync(this.path);
         this.data = JSON.parse(src); 
-      } catch (e) {
-        throw new JSONError('JSON file not in format or don`t exist.', {file: this.path}, src);
+      } catch (error) {
+        throw new JSONError('kit.jsonfile.load.exist', 'JSON file not in format or don`t exist.', {file: this.path, error}, src);
       }
     } else {
       this.data = {};

@@ -59,7 +59,7 @@ module.exports = class ZKit {
 
   async uninstall() {
     if (this.name === null) {
-      throw new ZeroError('App must be defined.');
+      throw new ZeroError('kit.uninstall.app.defined', 'App must be defined.');
     }
     const answer = await Input.input('Are you sure to delete all configs regarding the {title}? (y/n): ', Input.optionsBoolean({placeholders: {title: this.title}}));
     if (!answer) {

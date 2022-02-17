@@ -35,7 +35,7 @@ module.exports = class StorageManager {
     this.kit.handler.on('setup', () => {
       this.ensure(this.path(), false);
     });
-    this.kit.handler.on('cache:clear', (/** @type {import('../types').T_CacheQuery} */query) => {
+    this.kit.handler.on('cache.clear', (/** @type {import('../types').T_CacheQuery} */query) => {
       if (query.years) query.date = Date.now() - query.years * 365 * 24 * 60 * 60 * 1000;
       if (query.days) query.date = Date.now() - query.days * 24 * 60 * 60 * 1000;
 
@@ -132,7 +132,7 @@ module.exports = class StorageManager {
    */
   clearCache(query = 'all') {
     if (typeof query === 'string') query = {name: query};
-    this.kit.handler.emit('cache:clear', query);
+    this.kit.handler.emit('cache.clear', query);
   }
 
   checkApp() {

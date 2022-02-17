@@ -40,7 +40,7 @@ module.exports = class CacheFile {
   }
 
   clear() {
-    this.kit.handler.emit('cache:clear', {name: this.name});
+    this.kit.handler.emit('cache.clear', {name: this.name});
     return this;
   }
 

@@ -54,6 +54,7 @@
  * @property {(string|C_InputEvent)} [after]
  * @property {any} [fallback]
  * @property {boolean} [blind] Only supported for type 'read'.
+ * @property {RegExp} [mask] Only supported for type 'read'.
  */
 
 /**

@@ -99,6 +99,13 @@ module.exports = class Input {
     process.stdin.resume().setRawMode(true);
     return new Promise(resolve => {
       process.stdin.once('data', (input) => {
+        if (input[0] === 3) {
+          console.log('^C' + Color.theme.reset);
+          process.exit();
+        }
+        if (!options.mask.test(input + '')) {
+          input = options.fallback;
+        }
         if (!options.blind) {
           console.log(input + Color.theme.reset);
         } else {
@@ -145,6 +152,10 @@ module.exports = class Input {
         if (index === 'transform' || index === 'validate') continue;
         options[index] = item[index];
       }
+    }
+
+    if (options.type === 'read') {
+      if (!options.mask) options.mask = /[0-9a-zA-Z]/;
     }
 
     return options;

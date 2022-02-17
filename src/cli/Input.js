@@ -4,6 +4,11 @@ const ZeroError = require('../error/ZeroError');
 
 module.exports = class Input {
 
+  static get ZKit() {
+    if (this._zkit === undefined) this._zkit = require('../../index');
+    return this._zkit;
+  }
+
   /**
    * @param {string} message 
    * @param {import('../../types').T_InputOptions} options
@@ -15,6 +20,7 @@ module.exports = class Input {
     let readFunc = null;
 
     options = this.optionsMerge(options);
+
     if (!options.type || options.type === 'input') {
       readFunc = 'doInput';
     } else if (options.type === 'read') {
@@ -26,6 +32,8 @@ module.exports = class Input {
         options,
       });
     }
+
+    this.ZKit.handler.emit('kit.input', {message, options});
 
     do {
       if (typeof options.before === 'string') {

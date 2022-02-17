@@ -109,6 +109,7 @@ module.exports = class Input {
       process.stdin.once('data', (input) => {
         if (input[0] === 3) {
           console.log('^C' + Color.theme.reset);
+          this.ZKit.handler.emit('exit', {reason: 'input.abort', message, placeholders, options});
           process.exit();
         }
         if (!options.mask.test(input + '')) {

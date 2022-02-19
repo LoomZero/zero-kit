@@ -18,13 +18,13 @@ module.exports = class Input {
   }
 
   static toKeyString(buffer) {
-    const found = this.keys.find(v => v[1] == buffer);
+    const found = Input.keys.find(v => v[1] == buffer);
     if (found) return found[2];
     return buffer + '';
   }
 
   static toHumanKey(input) {
-    const found = this.keys.find(v => v[2] == input);
+    const found = Input.keys.find(v => v[2] == input);
     if (found) return found[0];
     return input;
   }

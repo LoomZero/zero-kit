@@ -4,6 +4,21 @@ const ZeroError = require('../error/ZeroError');
 
 module.exports = class Input {
 
+  static humanKey(input) {
+    switch (input) {
+      case '^W':
+        return 'Arrow-Up';
+      case '^D':
+        return 'Arrow-Right';
+      case '^S':
+        return 'Arrow-Down';
+      case '^A':
+        return 'Arrow-Left';
+      default:
+        return input;
+    }
+  }
+
   static get ZKit() {
     if (this._zkit === undefined) this._zkit = require('../../index');
     return this._zkit;
@@ -111,6 +126,15 @@ module.exports = class Input {
           console.log('^C' + Color.theme.reset);
           this.ZKit.handler.emit('exit', {reason: 'input.abort', message, placeholders, options});
           process.exit();
+        }
+        if (input == '\u001B\u005B\u0041') {
+          input = '^W';
+        } else if (input == '\u001B\u005B\u0043') {
+          input = '^D';
+        } else if (input == '\u001B\u005B\u0042') {
+          input = '^S';
+        } else if (input == '\u001B\u005B\u0044') {
+          input = '^A';
         }
         if (!options.mask.test(input + '')) {
           input = options.fallback;

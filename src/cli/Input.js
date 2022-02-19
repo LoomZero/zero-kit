@@ -9,6 +9,7 @@ module.exports = class Input {
       ['CONTROL_C', '\u0003', '^C'],
       ['ESCAPE', '\u001B', '^E'],
       ['BACKSPACE', '\u0008', '^B'],
+      ['ENTER', '\u000D', '^R'],
       ['ARROW_UP', '\u001B\u005B\u0041', '^W'],
       ['ARROW_RIGHT', '\u001B\u005B\u0043', '^D'],
       ['ARROW_DOWN', '\u001B\u005B\u0042', '^S'],

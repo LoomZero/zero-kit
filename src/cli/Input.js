@@ -4,19 +4,28 @@ const ZeroError = require('../error/ZeroError');
 
 module.exports = class Input {
 
-  static humanKey(input) {
-    switch (input) {
-      case '^W':
-        return 'Arrow-Up';
-      case '^D':
-        return 'Arrow-Right';
-      case '^S':
-        return 'Arrow-Down';
-      case '^A':
-        return 'Arrow-Left';
-      default:
-        return input;
-    }
+  static get keys() {
+    return [
+      ['CONTROL_C', '\u0003', '^C'],
+      ['ESCAPE', '\u001B', '^E'],
+      ['BACKSPACE', '\u0008', '^B'],
+      ['ARROW_UP', '\u001B\u005B\u0041', '^W'],
+      ['ARROW_RIGHT', '\u001B\u005B\u0043', '^D'],
+      ['ARROW_DOWN', '\u001B\u005B\u0042', '^S'],
+      ['ARROW_LEFT', '\u001B\u005B\u0044', '^A'],
+    ];
+  }
+
+  static toKeyString(buffer) {
+    const found = this.keys.find(v => v[1] == buffer);
+    if (found) return found[2];
+    return buffer + '';
+  }
+
+  static toHumanKey(input) {
+    const found = this.keys.find(v => v[2] == input);
+    if (found) return found[0];
+    return input;
   }
 
   static get ZKit() {
@@ -111,44 +120,48 @@ module.exports = class Input {
     });
   }
 
+  static readInput() {
+    process.stdin.resume().setRawMode(true);
+    return new Promise(resolve => {
+      process.stdin.once('data', (input) => {
+        process.stdin.setRawMode(false);
+        process.stdin.pause();
+        resolve(input);
+      });
+    });
+  }
+
   /**
    * @param {string} message 
    * @param {(string[]|Object<string, string>)} placeholders
    * @param {import('../../types').T_InputOptions} options
    * @returns {Promise<string>}
    */
-  static doRead(message, placeholders, options) {
+  static async doRead(message, placeholders, options) {
     process.stdout.write(Color.out('question', message, placeholders) + Color.theme.getColorString('input').message);
-    process.stdin.resume().setRawMode(true);
-    return new Promise(resolve => {
-      process.stdin.once('data', (input) => {
-        if (input[0] === 3) {
-          console.log('^C' + Color.theme.reset);
-          this.ZKit.handler.emit('exit', {reason: 'input.abort', message, placeholders, options});
-          process.exit();
-        }
-        if (input == '\u001B\u005B\u0041') {
-          input = '^W';
-        } else if (input == '\u001B\u005B\u0043') {
-          input = '^D';
-        } else if (input == '\u001B\u005B\u0042') {
-          input = '^S';
-        } else if (input == '\u001B\u005B\u0044') {
-          input = '^A';
-        }
-        if (!options.mask.test(input + '')) {
-          input = options.fallback;
-        }
-        if (!options.blind) {
-          console.log(input + Color.theme.reset);
-        } else {
-          process.stdout.write(Color.theme.reset);
-        }
-        process.stdin.setRawMode(false);
-        process.stdin.pause();
-        resolve(input + '');
-      });
-    });
+    let input = await this.readInput();
+
+    if (this.toKeyString(input) === '^C') {
+      console.log('^C' + Color.theme.reset);
+      this.ZKit.handler.emit('exit', {reason: 'input.abort', message, placeholders, options});
+      process.exit();
+    }
+
+    if (options.raw) return input;
+
+    input = await this.toKeyString(input);
+
+    if (options.mask && !options.mask.test(input + '')) {
+      input = options.fallback;
+    }
+
+    if (!options.blind) {
+      console.log(input + Color.theme.reset);
+    } else {
+      process.stdout.write(Color.theme.reset);
+    }
+
+    return input + '';
   }
 
   /**

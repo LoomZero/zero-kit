@@ -15,6 +15,16 @@ module.exports = class ZKit {
     this._storage = null;
   }
 
+  createHandler(id) {
+    const handler = new Handler();
+    const old = handler.emit;
+    handler.emit = (event, ...args) => {
+      this.handler.emit(id + '.' + event, ...args);
+      old.call(handler, event, ...args);
+    };
+    return handler;
+  }
+
   /**
    * @returns {import('./StorageManager')}
    */

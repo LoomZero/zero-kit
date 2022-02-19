@@ -55,6 +55,7 @@
  * @property {any} [fallback]
  * @property {boolean} [blind] Only supported for type 'read'.
  * @property {RegExp} [mask] Only supported for type 'read'.
+ * @property {boolean} [raw] Only supported for type 'read'.
  */
 
 /**

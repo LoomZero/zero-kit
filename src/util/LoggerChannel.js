@@ -25,15 +25,22 @@ module.exports = class LoggerChannel {
    * @param {string} message
    * @param {(string[]|Object<string, string>)} placeholders
    */
-  log(type, message, placeholders) {
+  log(type, message, placeholders = {}) {
     this.logger.write(type, this.channel, Reflection.replaceMessage(message, placeholders));
+  }
+
+  debug(message, placeholders = {}, context = null) {
+    if (context !== null) {
+      placeholders.context = Reflection.debugContext(context);
+    }
+    this.log('debug', message, placeholders);
   }
 
   /**
    * @param {string} message
    * @param {(string[]|Object<string, string>)} placeholders
    */
-  info(message, placeholders) {
+  info(message, placeholders = {}) {
     this.log('info', message, placeholders);
   }
 
@@ -41,7 +48,7 @@ module.exports = class LoggerChannel {
    * @param {string} message
    * @param {(string[]|Object<string, string>)} placeholders
    */
-  warn(message, placeholders) {
+  warn(message, placeholders = {}) {
     this.log('warn', message, placeholders);
   }
 
@@ -50,7 +57,7 @@ module.exports = class LoggerChannel {
    * @param {(string[]|Object<string, string>)} placeholders 
    * @param {Error} error
    */
-  error(message, placeholders, error = null) {
+  error(message, placeholders = {}, error = null) {
     if (message instanceof Error) {
       error = message;
       if (message instanceof ZeroError) { 

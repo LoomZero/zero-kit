@@ -9,6 +9,7 @@ module.exports = class FileLogger {
   constructor(path) {
     this.path = path; 
     this._stream = null;
+    this.channels = {};
   }
 
   get stream() {
@@ -22,7 +23,10 @@ module.exports = class FileLogger {
    * @param {string} channel 
    */
   channel(channel) {
-    return new LoggerChannel(this, channel);
+    if (this.channels[channel] === undefined) {
+      this.channels[channel] = new LoggerChannel(this, channel);
+    }
+    return this.channels[channel];
   }
 
   /**

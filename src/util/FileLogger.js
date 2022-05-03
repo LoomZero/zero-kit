@@ -56,7 +56,7 @@ module.exports = class FileLogger {
    * @returns {string}
    */
   format(time, type, channel, message) {
-    return time + ' [' + type.toUpperCase() + '~' + channel + '] ' + message;
+    return time + ' [' + type.toUpperCase() + ' ~ ' + channel + '] ' + message;
   }
 
   getTimeLog(dateSep = '.', timeSep = ':', logSep = ' ') {

@@ -19,16 +19,16 @@ module.exports = class JSONFile {
    * @returns {this}
    */
   load() {
-    if (FS.existsSync(this.path)) {
+    if (FS.existsSync(this.path) && FS.statSync(this.path).size > 0) {
       let src = null;
       try {
         src = FS.readFileSync(this.path);
-        this.data = JSON.parse(src); 
+        this.data = JSON.parse(src);
       } catch (error) {
         throw new JSONError('kit.jsonfile.load.exist', 'JSON file not in format or don`t exist.', {file: this.path, error}, src);
       }
     } else {
-      this.data = {};
+      this.data = null;
     }
     return this;
   }
@@ -43,6 +43,11 @@ module.exports = class JSONFile {
       FS.writeFileSync(this.path, JSON.stringify(this.data));
     }
     return this;
+  }
+
+  isEmpty() {
+    if (this.data === null) this.load();
+    return this.data === null;
   }
 
   /**
@@ -61,6 +66,7 @@ module.exports = class JSONFile {
    */
   set(name, value) {
     if (this.data === null) this.load();
+    if (this.data === null) this.data = {};
     Reflection.setDeep(this.data, name, value);
     return this;
   }

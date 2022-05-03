@@ -13,6 +13,14 @@ module.exports = class LoggerChannel {
   }
 
   /**
+   * @param {string} title 
+   * @param {string} char 
+   */
+  section(title, char = '#') {
+    this.logger.writeSection(title, char);
+  }
+
+  /**
    * @param {string} type 
    * @param {string} message
    * @param {(string[]|Object<string, string>)} placeholders

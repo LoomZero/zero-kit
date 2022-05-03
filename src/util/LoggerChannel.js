@@ -67,7 +67,7 @@ module.exports = class LoggerChannel {
       }
     }
     if (error !== null) {
-      message += "\nMore:\n" + error;
+      message += "\nMore:\n" + error.stack;
     }
     this.log('error', message, placeholders);
   }

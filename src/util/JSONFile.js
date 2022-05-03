@@ -1,7 +1,7 @@
 const FS = require('fs');
+
 const JSONError = require('../error/JSONError');
 const Reflection = require('./Reflection');
-const ZKit = require('../../index');
 
 module.exports = class JSONFile {
 
@@ -37,7 +37,6 @@ module.exports = class JSONFile {
    * @returns {this}
    */
   save() {
-    ZKit.storage.ensure(this.path);
     if (this.format) {
       FS.writeFileSync(this.path, JSON.stringify(this.data, null, '  '));
     } else {

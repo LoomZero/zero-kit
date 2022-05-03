@@ -61,7 +61,7 @@ module.exports = class FileLogger {
 
   getTimeLog(dateSep = '.', timeSep = ':', logSep = ' ') {
     const now = new Date();
-    return ('0' + now.getDay()).slice(-2) + dateSep + ('0' + now.getMonth()).slice(-2) + dateSep + now.getFullYear() + logSep + now.getHours() + timeSep + now.getMinutes() + timeSep + now.getSeconds();
+    return ('0' + now.getDay()).slice(-2) + dateSep + ('0' + now.getMonth()).slice(-2) + dateSep + now.getFullYear() + logSep + ('0' + now.getHours()).slice(-2) + timeSep + ('0' + now.getMinutes()).slice(-2) + timeSep + ('0' + now.getSeconds()).slice(-2);
   }
 
   close() {

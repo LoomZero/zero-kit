@@ -47,6 +47,10 @@ module.exports = class ZKit {
     if (listener) this.handler.on('debug:event', listener);
   }
 
+  exit() {
+    this.handler.emit('kit.exit');
+  }
+
   /**
    * @param {string} name 
    * @param {string} title

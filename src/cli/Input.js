@@ -8,7 +8,7 @@ module.exports = class Input {
     return [
       ['Control-C', '\u0003', '^C'],
       ['Escape', '\u001B', '^E'],
-      ['Backspace', '\u0008', '^B'],
+      ['Backspace', '\u007F', '^B'],
       ['Enter', '\u000D', '^R'],
       ['Arrow-Up', '\u001B\u005B\u0041', '^W'],
       ['Arrow-Right', '\u001B\u005B\u0043', '^D'],
@@ -50,6 +50,8 @@ module.exports = class Input {
       readFunc = 'doInput';
     } else if (options.type === 'read') {
       readFunc = 'doRead';
+    } else if (options.type === 'sequence') {
+      readFunc = 'doSequence';
     } else {
       throw new ZeroError('kit.input.type.unknown', 'Unknown input type "' + options.type + '"', {
         type: options.type,
@@ -163,6 +165,37 @@ module.exports = class Input {
     }
 
     return input + '';
+  }
+
+  /**
+   * @param {string} message 
+   * @param {(string[]|Object<string, string>)} placeholders
+   * @param {import('../../types').T_InputOptions} options
+   * @returns {Promise<string>}
+   */
+  static async doSequence(message, placeholders, options) {
+    process.stdout.write(Color.out('question', message, placeholders) + Color.theme.getColorString('input').message);
+    options.onInput = options.onInput || (() => {});
+    let input = '';
+    let read = '';
+    do {
+      read = await this.readInput();
+      read = Input.toKeyString(read);
+      if (read === '^C') {
+        console.log('^C' + Color.theme.reset);
+        this.ZKit.handler.emit('exit', {reason: 'input.abort', message, placeholders, options});
+        process.exit();
+      } else if (read === '^B' && input.length) {
+        input = input.substring(0, input.length - 1);
+        process.stdout.write('\u0008');
+        process.stdout.clearLine(1);
+      } else if (!options.onInput(read, { message, placeholders, options }) && !read.startsWith('^')) {
+        process.stdout.write(read);
+        input += read;
+      }
+    } while(read !== '^R');
+    console.log(Color.theme.reset);
+    return input;
   }
 
   /**

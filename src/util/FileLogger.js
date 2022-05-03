@@ -31,7 +31,17 @@ module.exports = class FileLogger {
    * @param {string} message
    */
   write(type, channel, message) {
-    this.stream.write(this.format(this.getTimeLog(), type, channel, message));
+    this.stream.write(this.format(this.getTimeLog(), type, channel, message) + "\n");
+  }
+
+  /**
+   * @param {string} title 
+   * @param {string} char
+   */
+  writeSection(title, char = '#') {
+    this.stream.write(char.repeat(title.length + 4) + "\n");
+    this.stream.write(char + ' ' + title + ' ' + char + "\n");
+    this.stream.write(char.repeat(title.length + 4) + "\n");
   }
 
   /**

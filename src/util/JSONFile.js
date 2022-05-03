@@ -37,7 +37,9 @@ module.exports = class JSONFile {
    * @returns {this}
    */
   save() {
-    if (this.format) {
+    if (this.isEmpty()) {
+      FS.writeFile(this.path, '');
+    } else if (this.format) {
       FS.writeFileSync(this.path, JSON.stringify(this.data, null, '  '));
     } else {
       FS.writeFileSync(this.path, JSON.stringify(this.data));

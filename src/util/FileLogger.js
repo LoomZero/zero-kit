@@ -14,7 +14,7 @@ module.exports = class FileLogger {
 
   get stream() {
     if (this._stream === null) {
-      this._stream = FS.createWriteStream(this.path);
+      this._stream = FS.createWriteStream(this.path, { flags: 'a' });
     }
     return this._stream;
   }

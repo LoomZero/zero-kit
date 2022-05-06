@@ -98,17 +98,15 @@ module.exports = class FileLogger {
    * @returns {this}
    */
   pipe(logger, filters = null) {
-    if (filters === null) {
-      if (filters === null || filters.includes('section') && filters.length > 1 || !filters.includes('section')) {
-        this.handler.on('write', (type, ...args) => {
-          if (filters.includes(type)) {
-            logger.write(type, ...args);
-          }
-        });
-      }
-      if (filters === null || filters.includes('section')) {
-        this.handler.on('section', (...args) => logger.writeSection(...args));
-      }
+    if (filters === null || filters.includes('section') && filters.length > 1 || !filters.includes('section')) {
+      this.handler.on('write', (type, ...args) => {
+        if (filters === null || filters.includes(type)) {
+          logger.write(type, ...args);
+        }
+      });
+    }
+    if (filters === null || filters.includes('section')) {
+      this.handler.on('section', (...args) => logger.writeSection(...args));
     }
     return this;
   }

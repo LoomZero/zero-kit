@@ -98,7 +98,7 @@ module.exports = class FileLogger {
    * @returns {this}
    */
   pipe(logger, filters = null) {
-    if (filter === null) {
+    if (filters === null) {
       if (filters === null || filters.includes('section') && filters.length > 1 || !filters.includes('section')) {
         this.handler.on('write', (type, ...args) => {
           if (filters.includes(type)) {
